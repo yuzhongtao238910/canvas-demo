@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+		const canvas = document.createElement("canvas")
+		// 2- 必须通过属性设置宽高
+		canvas.width = 600
+		canvas.height = 400
+		document.body.appendChild(canvas)
+		const context = canvas.getContext("2d")
+		context.beginPath();  
+		context.moveTo(50, 200); // 起始点在 (50, 200)  
+		context.arcTo(150, 200, 300, 200, 100);  
+		// 圆弧曲线 贝塞尔曲线
+		// context.beginPath()
+		// context.arc(100, 100, 50, 0, Math.PI / 2, true)
+		// context.stroke()
+		context.lineTo(300, 200);  
+  
+// 绘制路径  
+context.stroke();  
+context.beginPath();  
+context.arc(200, 200, 100, 0, Math.PI * 2); // 辅助圆在 (200, 200)，半径为 100  
+context.strokeStyle = 'rgba(0, 0, 255, 0.5)'; // 辅助圆半透明蓝色  
+context.stroke();
+		// context.fill()
+
+
+		// context.beginPath()
+
+
+	</script>
+</body>	
+</html>

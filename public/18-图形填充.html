@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+		const canvas = document.createElement("canvas")
+		// 2- 必须通过属性设置宽高
+		canvas.width = 600
+		canvas.height = 400
+		document.body.appendChild(canvas)
+		const context = canvas.getContext("2d")
+
+		// 填充图形的方法 填充一个三角形
+		// 1- 先绘制我们的路径
+		// 2- fill 进行填充
+
+		//  fill 填充会自动闭合 链接 的起点和终点
+		context.beginPath()
+		context.moveTo(100, 100)
+		context.lineTo(100, 200)
+		context.lineTo(200, 200)
+		context.fillStyle = "yellow"
+		context.fill()
+
+
+		context.beginPath()
+
+		// 自动连接起点和终点
+		context.arc(300, 300, 50, 0, Math.PI)
+		context.fillStyle = "purple"
+		context.fill()
+
+	</script>
+</body>
+</html>

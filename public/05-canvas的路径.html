@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+		const canvas = document.createElement("canvas")
+		// 2- 必须通过属性设置宽高
+		canvas.width = 600
+		canvas.height = 400
+
+		document.body.appendChild(canvas)
+
+		const context = canvas.getContext("2d")
+		// context.beginPath();
+		context.arc(100, 100, 50, 0, 2* Math.PI, true)
+		context.fill();
+		context.stroke();
+		context.closePath();
+
+		// ------
+
+		context.beginPath();
+		context.moveTo(100, 200)
+		context.lineTo(150, 250)
+		context.lineTo(200, 200)
+		context.lineTo(250, 250)
+		// context.fill();
+		// context.closePath();
+    	context.stroke();
+	</script>
+</body>
+</html>
