@@ -31,7 +31,13 @@
 
 		// 自动连接起点和终点
 		context.arc(300, 300, 50, 0, Math.PI)
-		context.fillStyle = "purple"
+		const g = context.createLinearGradient(200,200,400, 400)
+		g.addColorStop(0, 'yellow')
+		// g.addColorStop(0.25, "pink")
+		// g.addColorStop(0.5, "purple")
+		// g.addColorStop(0.75, "green")
+		g.addColorStop(1, "blue")
+		context.fillStyle = g
 		context.fill()
 
 	</script>

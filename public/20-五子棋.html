@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<style type="text/css">
+		canvas {
+			background-color: #0a0;
+			margin: 50px auto;
+			display: block;
+		}
+		.tip {
+			text-align: center;
+			padding: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div class="tip" id="tip">请黑棋落子</div>
+	<script type="text/javascript">
+		let res1
+		let res2
+		let res3
+		let res4
+		const canvas = document.createElement("canvas")
+		// 2- 必须通过属性设置宽高
+		canvas.width = 800
+		canvas.height = 800
+		document.body.appendChild(canvas)
+		const context = canvas.getContext("2d")
+
+		// 棋盘
+
+		// 棋盘由横线和纵线组合而成的
+		// 700 / 50
+		let array = []
+		for (let i = 1; i < 16; i++) {
+			// 线段
+			context.beginPath()
+			context.moveTo(50, 50 * i)
+			context.lineTo(750, 50 * i)
+			context.stroke()
+			// ------------
+			context.beginPath()
+			context.moveTo(50 * i, 50)
+			context.lineTo(50 * i, 750)
+			context.stroke()
+			array[i-1] = new Array(14)
+		}	
+		// 使用变量保存棋子的颜色
+		let isBlack = true
+
+		// 使用一个二维数组，把所有的棋子都存储起来
+		// let set = new Set()
+		
+
+
+		// 当点击棋盘的时候，需要绘制一个圆
+		canvas.addEventListener("click", (evt) => {
+			// console.log(evt)
+			// console.dir(canvas)
+
+			if (res1) {
+				// 有人已经赢了，游戏结束
+				tip.innerHTML = isBlack ? "白色的赢了" : "黑色的赢了"
+				return
+			}
+			if (res2) {
+				// 有人已经赢了，游戏结束
+				tip.innerHTML = isBlack ? "白色的赢了" : "黑色的赢了"
+				return
+			}
+			if (res3) {
+				// 有人已经赢了，游戏结束
+				tip.innerHTML = isBlack ? "白色的赢了" : "黑色的赢了"
+				return
+			}
+			if (res4) {
+				// 有人已经赢了，游戏结束
+				tip.innerHTML = isBlack ? "白色的赢了" : "黑色的赢了"
+				return
+			}
+			let {offsetX, offsetY} = evt
+			if (offsetX < 25 || offsetX > 775 || offsetY < 25 || offsetY > 775) {
+				return
+				// 边界的问题
+			}
+			let i = Math.round(offsetX / 50) - 1
+			let j = Math.round(offsetY / 50) - 1
+			let x = Math.round(offsetX / 50) * 50
+			let y = Math.round(offsetY / 50) * 50
+			let str = x + "-" + y
+			if (array[i][j]) {
+				alert("该位置已经有棋子了")
+				return 
+			}
+			
+			array[i][j] = isBlack ? "black" : "white"
+			// set.add(str)
+
+			context.beginPath()
+			context.arc(x, y, 20, 0,Math.PI * 2)
+			let tx = isBlack ? x-10 : x + 10
+			let ty = isBlack ? y - 10:y +10
+			let g = context.createRadialGradient(tx, ty,0, tx, ty, 30)
+			g.addColorStop(0, isBlack ? "#ccc" : "#999")
+			g.addColorStop(1, isBlack ? "#000" : "#fff")
+			// context.fillStyle = isBlack ? "black" : "white"
+			context.fillStyle = g
+			context.fill()
+			isBlack = !isBlack
+			// console.log(array)
+
+
+			// 纵向
+			res1 = checkVertical(i, j, array)
+			if (res1) {
+				alert(isBlack ? "白色" : "黑色" + "赢了")
+			}
+			// 横向
+			if (res1) {
+				// 有人已经赢了，游戏结束
+				tip.innerHTML = isBlack ? "白色的赢了" : "黑色的赢了"
+				return
+			}
+
+			// 斜着
+			res2 = checkHorizontal(i, j, array)
+			if (res2) {
+				alert(isBlack ? "白色" : "黑色" + "赢了")
+			}
+			// 横向
+			if (res2) {
+				// 有人已经赢了，游戏结束
+				tip.innerHTML = isBlack ? "白色的赢了" : "黑色的赢了"
+				return
+			}
+
+			// 斜着
+			res3 = checkLeft(i, j, array)
+			if (res3) {
+				alert(isBlack ? "白色" : "黑色" + "赢了")
+			}
+			// 横向
+			if (res3) {
+				// 有人已经赢了，游戏结束
+				tip.innerHTML = isBlack ? "白色的赢了" : "黑色的赢了"
+				return
+			}
+
+
+			res4 = checkRight(i, j, array)
+			if (res4) {
+				alert(isBlack ? "白色" : "黑色" + "赢了")
+			}
+			// 横向
+			if (res4) {
+				// 有人已经赢了，游戏结束
+				tip.innerHTML = isBlack ? "白色的赢了" : "黑色的赢了"
+				return
+			}
+			
+			tip.innerHTML = isBlack ? "请黑棋落子" : "请白棋落子"
+		})
+		// 纵向查找是否有5个连续的
+		function checkVertical(row, col, array) {
+			let curColor = array[row][col]
+			let curCol1 = col
+			let curCol2 = col
+			while(true) {
+				if (array[row][curCol1] !== curColor || curCol1 < 0) {
+					break
+				}
+				// 以 row col为起点，在二维数组上 向上和向下查找
+				curCol1--
+			}
+
+			while(true) {
+				if (array[row][curCol2] !== curColor || curCol2 > 14) {
+					break
+				}
+				// 以 row col为起点，在二维数组上 向上和向下查找
+				curCol2++
+			}
+			return curCol2 - curCol1 > 5 ? true : false
+		}
+		function checkHorizontal(row, col, array) {
+			let curColor = array[row][col]
+			let curRow1 = row
+			let curRow2 = row
+			while(true) {
+				if (array[curRow1][col] !== curColor || curRow1 < 0) {
+					break
+				}
+				// 以 row col为起点，在二维数组上 向上和向下查找
+				curRow1--
+			}
+
+			while(true) {
+				if (array[curRow2][col] !== curColor || curRow2 > 14) {
+					break
+				}
+				// 以 row col为起点，在二维数组上 向上和向下查找
+				curRow2++
+			}
+			return curRow2 - curRow1 > 5 ? true : false
+		}
+
+		function checkLeft(row, col, array) {
+			let curColor = array[row][col]
+			let curRow1 = row - 1
+			let curCol1 = col - 1
+			let curRow2 = row + 1
+			let curCol2 = col + 1
+			let left = curRow1
+			let right = curRow2
+			while(true) {
+				if (array[curRow1][curCol1] !== curColor || curRow1 < 0 || curCol1 < 0) {
+					break
+				}
+				// 以 row col为起点，在二维数组上 向上和向下查找
+				curRow1--
+				curCol1--
+				left = curRow1
+			}
+
+			while(true) {
+				if (array[curRow2][curCol2] !== curColor || curRow2 > 14 || curCol2 > 14) {
+					break
+				}
+				// 以 row col为起点，在二维数组上 向上和向下查找
+				curRow2++
+				curCol2++
+				right = curRow2
+			}
+			return right - left > 5 ? true : false
+		}
+		function checkRight(row, col, array) {
+			let curColor = array[row][col]
+			let curRow1 = row + 1
+			let curCol1 = col - 1
+			let curRow2 = row - 1
+			let curCol2 = col + 1
+			let left = curRow1
+			let right = curRow2
+			while(true) {
+				if (array[curRow1][curCol1] !== curColor || curRow1 > 14 || curCol1 < 0) {
+					break
+				}
+				// 以 row col为起点，在二维数组上 向上和向下查找
+				curRow1++
+				curCol1--
+				left = curRow1
+			}
+
+			while(true) {
+				if (array[curRow2][curCol2] !== curColor || curRow2 < 0 || curCol2 > 14) {
+					break
+				}
+				// 以 row col为起点，在二维数组上 向上和向下查找
+				curRow2--
+				curCol2++
+				right = curRow2
+			}
+			console.log(right, left)
+			return left - right > 5 ? true : false
+		}
+	</script>
+</body>
+</html>

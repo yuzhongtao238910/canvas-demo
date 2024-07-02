@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+		const canvas = document.createElement("canvas")
+		// 2- 必须通过属性设置宽高
+		canvas.width = 600
+		canvas.height = 400
+		document.body.appendChild(canvas)
+		const context = canvas.getContext("2d")
+		context.beginPath()
+		context.arc(300, 200, 100, 0, 2 * Math.PI, true)
+		// context.arc(300, 200, 100, 0, 2 * Math.PI)
+		const g = context.createRadialGradient(250, 150, 0, 250, 150, 100)
+		g.addColorStop(0, "#ccc")
+		g.addColorStop(1, "#000")
+		context.fillStyle = g
+		context.fill()
+		
+	</script>
+</body>
+</html>
