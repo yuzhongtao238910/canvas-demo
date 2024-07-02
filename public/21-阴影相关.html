@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<style type="text/css">
+
+	</style>
+</head>
+<body>
+	<script type="text/javascript">
+
+		const canvas = document.createElement("canvas")
+		// 2- 必须通过属性设置宽高
+		canvas.width = 800
+		canvas.height = 800
+		document.body.appendChild(canvas)
+		const context = canvas.getContext("2d")
+		context.strokeStyle = "#0a0"
+		context.lineWidth = 4
+		context.beginPath()
+		context.shadowColor = "#ccc"
+		context.shadowOffsetX = 50
+		context.shadowOffsetY = 9
+		context.shadowBlur = 100
+		context.moveTo(100, 100)
+		context.lineTo(200, 300)
+		context.stroke()
+	</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

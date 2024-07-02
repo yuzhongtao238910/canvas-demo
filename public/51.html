@@ -53,6 +53,33 @@
 
 		// 使用一个二维数组，把所有的棋子都存储起来
 		// let set = new Set()
+		canvas.addEventListener("mousemove", (evt) => {
+		// 	context.clearRect(0, 0, canvas.width, canvas.height);  
+		// 	for (let i = 1; i < 16; i++) {
+		// 	// 线段
+		// 		context.setLineDash([]);
+		// 	context.beginPath()
+		// 	context.moveTo(50, 50 * i)
+		// 	context.lineTo(750, 50 * i)
+		// 	context.stroke()
+		// 	// ------------
+		// 	context.beginPath()
+		// 	context.moveTo(50 * i, 50)
+		// 	context.lineTo(50 * i, 750)
+		// 	context.stroke()
+		// 	array[i-1] = new Array(14)
+		// }	
+		// 	console.log("11")
+		// 	let {offsetX, offsetY} = evt
+		// 	let i = Math.round(offsetX / 50) - 1
+		// 	let j = Math.round(offsetY / 50) - 1
+		// 	let x = Math.round(offsetX / 50) * 50
+		// 	let y = Math.round(offsetY / 50) * 50
+		// 	context.beginPath()
+		// 	context.setLineDash([5, 15]);
+		// 	context.arc(x, y, 20, 0,Math.PI * 2)
+		// 	context.stroke()
+		})
 		
 
 
@@ -92,6 +119,15 @@
 			let g = context.createRadialGradient(tx, ty,0, tx, ty, 30)
 			g.addColorStop(0, isBlack ? "#ccc" : "#999")
 			g.addColorStop(1, isBlack ? "#000" : "#fff")
+
+
+
+			// 美化棋子
+			context.shadowBlur = 4
+			context.shadowColor = "#333"
+			context.shadowOffsetX = 4
+			context.shadowOffsetY = 4
+
 			// context.fillStyle = isBlack ? "black" : "white"
 			context.fillStyle = g
 			context.fill()
