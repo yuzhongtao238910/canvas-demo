@@ -22,10 +22,47 @@
 		document.body.appendChild(canvas)
 		const context = canvas.getContext("2d")
 
+		// 准备一个地球旋转的角度
+		let angle = 0
+
 		function loop() {
+			// context.translate(0, 0)
+			// context.rotate(0)
+			context.save()
+			context.clearRect(0,0,800, 600)
+			context.beginPath()
 			context.fillStyle = "yellow"
 			context.arc(400, 300, 100, 0, 2 * Math.PI)
+			context.shadowColor = "yellow"
+			context.shadowBlur = 5;
 			context.fill()
+			context.closePath();
+
+
+			// -------------
+			context.beginPath()
+			context.fillStyle = "blue"
+			// 200 x -> -600 600
+			// angle+= 0.3
+			context.translate(400, 300)
+			// 画笔旋转角度
+			context.rotate(Math.PI / 360 * angle)
+			// 
+			context.translate(200, 0)
+			context.arc(0, 0, 20, 0, 2 * Math.PI)
+			context.shadowColor = "blue"
+			context.shadowBlur = 0;
+			context.fill()
+			context.closePath();
+			
+
+			context.beginPath()
+			context.fillStyle = "white"
+			context.arc(40, 0, 10, 0, 2 * Math.PI)
+			context.fill()
+			context.closePath();
+			context.restore()
+
 			requestAnimationFrame(loop)
 		}
 		requestAnimationFrame(loop)
