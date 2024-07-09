@@ -15,6 +15,22 @@
 		const context = canvas.getContext("2d")
 
 		// 滤镜 blur
+		let img = new Image()
+		img.src = "./assets/1.png"
+
+		// 滤镜
+		// context.filter = 'blur(10px)'
+		// context.filter = "brightness(50%)"
+		// context.filter = "contrast(50%)"
+		// context.filter = "grayscale(80%)"
+		// context.filter = "hue-rotate(10deg)"
+		// context.filter = "invert(10%)"
+		// context.filter = "opacity(60%)"
+		// context.filter = "saturate(60%)"
+		context.filter = "sepia(100%)"
+		img.onload = evt => {
+			context.drawImage(img, 180, 180, 600, 600, 100, 100, 200, 200)
+		}
 	</script>
 </body>
 </html>
