@@ -9,6 +9,7 @@
 			background-color: #fff;
 			display: block;
 			margin: 0 auto;
+			border: 1px solid #ccc;
 		}
 	</style>
 </head>
@@ -36,6 +37,8 @@
 			IDLE: 0,
 			DRAG_START: 1,
 			DRAGGING: 2,
+			MOVE_START: 3,
+			MOVING: 4
 		}
 		const canvasInfo = {
 			status: statusConfig.IDLE,
@@ -45,6 +48,10 @@
 				y: null
 			},
 			offsetEvtPosition: {
+				x: null,
+				y: null
+			},
+			offsetMouseEvtPosition: {
 				x: null,
 				y: null
 			},
@@ -93,6 +100,19 @@
 				y: evt.offsetY
 			}
 		}
+
+		const getCanvasRealPosition = (evt, offset = {x: 0, y: 0}, scale = 1) => {
+			return {
+				x:( evt.offsetX - offset.x) / scale,
+				y:( evt.offsetY - offset.y ) / scale
+			}
+		}
+		const getMousePosition = e => {
+			return {
+				x: e.offsetX,
+				y: e.offsetY
+			}
+		}
 		const getDistance = (p1, p2) => {
 			return Math.sqrt((p1.x - p2.x) **2 + (p1.y - p2.y) ** 2)
 		}
@@ -106,48 +126,106 @@
  			}
  			return false
 		}
-
-		canvas.addEventListener("mousedown", evt => {
-			const canvasPosition = getCanvasPosition(evt)
-			const circleRef = ifInCircle(canvasPosition)
-			if (circleRef) {
-				canvasInfo.dragTarget = circleRef
-				canvasInfo.status = statusConfig.DRAG_START
-				canvasInfo.lastEvtPosition = canvasPosition
-				canvasInfo.offsetEvtPosition = canvasPosition
-			} 
+		canvas.addEventListener("contextmenu", evt => {
+			evt.preventDefault()
+			console.log("righty")
 		})
 
+		canvas.addEventListener("mousedown", evt => {
+			evt.preventDefault()
+			const canvasPosition = getCanvasPosition(evt)
+			const realCanvasPosition = {
+				x: (canvasPosition.x - canvasInfo.offset.x) / canvasInfo.scale,
+				y: (canvasPosition.y - canvasInfo.offset.y) / canvasInfo.scale,
+			}
+			// evt.button 代表是 鼠标的左键  中间的键 右键的 按下的情况
+			console.log(evt.button)
+			const circleRef = ifInCircle(realCanvasPosition)
+			if (evt.button === 0 ) {
+				
+				if (circleRef) {
+					canvasInfo.dragTarget = circleRef
+					canvasInfo.status = statusConfig.DRAG_START
+					canvasInfo.lastEvtPosition = realCanvasPosition
+					canvasInfo.offsetEvtPosition = realCanvasPosition
+				} 
+			} else if (evt.button == 2) {
+				
+				if (!circleRef) {
+					console.log("right")
+					canvasInfo.status = statusConfig.MOVE_START
+					// canvasInfo.lastEvtPosition = realCanvasPosition
+					canvasInfo.offsetMouseEvtPosition = getMousePosition(evt)
+				}
+				
+			}
+			
+		})
+
+		canvas.addEventListener("click", evt => {
+			const canvasPosition = getCanvasPosition(evt)
+			console.log(canvasPosition, 123)
+		})
 		canvas.addEventListener("mousemove", evt => {
 			const canvasPosition = getCanvasPosition(evt)
-			if (canvasInfo.status === statusConfig.DRAG_START && getDistance(canvasPosition, canvasInfo.lastEvtPosition) > 5) {
+			// console.log(canvasPosition, 123)
+
+			const realCanvasPosition = {
+				x: (canvasPosition.x - canvasInfo.offset.x) / canvasInfo.scale,
+				y: (canvasPosition.y - canvasInfo.offset.y) / canvasInfo.scale,
+			}
+
+			if (canvasInfo.status === statusConfig.DRAG_START && getDistance(realCanvasPosition, canvasInfo.lastEvtPosition) > 5) {
 				// console.log("start")
 				canvasInfo.status = statusConfig.DRAGGING
-				canvasInfo.offsetEvtPosition = canvasPosition
+				canvasInfo.offsetEvtPosition = realCanvasPosition
 			} else if (canvasInfo.status === statusConfig.DRAGGING) {
 				// console.log("try to draging")
 				const { dragTarget } = canvasInfo
-				dragTarget.x += (canvasPosition.x - canvasInfo.offsetEvtPosition.x)
-				dragTarget.y += (canvasPosition.y - canvasInfo.offsetEvtPosition.y)
-				context.clearRect(0,0,800,600)
+				dragTarget.x += (realCanvasPosition.x - canvasInfo.offsetEvtPosition.x)
+				dragTarget.y += (realCanvasPosition.y - canvasInfo.offsetEvtPosition.y)
+				context.clearRect(0,0,canvas.width,canvas.height)
 				circles.forEach(c => {
 					drawCircle(context, c.x, c.y, c.r)
 				})
-				canvasInfo.offsetEvtPosition = canvasPosition
+				canvasInfo.offsetEvtPosition = realCanvasPosition
 				
+			} else if (canvasInfo.status === statusConfig.MOVE_START && getDistance(realCanvasPosition, canvasInfo.lastEvtPosition) > 5) {
+				console.log("move start")
+				canvasInfo.status = statusConfig.MOVING
+				canvasInfo.offsetMouseEvtPosition = getMousePosition(evt)
+			} else if (canvasInfo.status === statusConfig.MOVING) {
+				const mousePosition = getMousePosition(evt)
+				console.log("moving")
+				canvasInfo.offset.x += mousePosition.x - canvasInfo.offsetMouseEvtPosition.x
+
+				canvasInfo.offset.y += mousePosition.y - canvasInfo.offsetMouseEvtPosition.y
+
+				context.setTransform(canvasInfo.scale,0,0, canvasInfo.scale, canvasInfo.offset.x, canvasInfo.offset.y)
+				// context.clearRect(-deltaX,-deltaY,800 / canvasInfo.scale,600 / canvasInfo.scale)
+				context.clearRect(0,0 , canvas.width, canvas.height)
+				circles.forEach(c => {
+					drawCircle(context, c.x, c.y, c.r)
+				})
+				canvasInfo.offsetMouseEvtPosition = mousePosition
 			}
 		})
 
 		canvas.addEventListener("mouseup", evt => {
 			const canvasPosition = getCanvasPosition(evt)
-			if (canvasInfo.status === statusConfig.DRAGGING) {
+			if (canvasInfo.status === statusConfig.DRAGGING || canvasInfo.status === statusConfig.MOVING) {
 				canvasInfo.status = statusConfig.IDLE
 			}
 		})
 
 		canvas.addEventListener("mousemove", evt => {
+
 			const canvasPosition = getCanvasPosition(evt)
-			const circleRef = ifInCircle(canvasPosition)
+			const realCanvasPosition = {
+				x: (canvasPosition.x - canvasInfo.offset.x) / canvasInfo.scale,
+				y: (canvasPosition.y - canvasInfo.offset.y) / canvasInfo.scale,
+			}
+			const circleRef = ifInCircle(realCanvasPosition)
 			if (circleRef) {
 				canvas.style.cursor = "all-scroll"
 			} else {
@@ -160,6 +238,7 @@
 		canvas.addEventListener("wheel", evt => {
 			evt.preventDefault()
 			const canvasPosition = getCanvasPosition(evt)
+			console.log(canvasPosition, 175, canvasInfo.offset)
 			// translate 之后 计算真实的坐标
 			const realCanvasPosition = {
 				x: canvasPosition.x - canvasInfo.offset.x,
@@ -167,14 +246,17 @@
 			}
 			const deltaX = realCanvasPosition.x / canvasInfo.scale * canvasInfo.scaleStep
 			const deltaY = realCanvasPosition.y / canvasInfo.scale * canvasInfo.scaleStep
+			// console.log(deltaX, deltaY)
 
-			if (evt.wheelDelta > 0) {
+			// console.log(canvasInfo.offset.x, canvasInfo.offset.y)
+
+			if (evt.wheelDelta > 0 && canvasInfo.scale < canvasInfo.maxScale) {
 				// 再放大
 				console.log(evt.wheelDelta, "放大")
 				canvasInfo.offset.x -= deltaX
 				canvasInfo.offset.y -= deltaY
 				canvasInfo.scale += canvasInfo.scaleStep
-			} else {
+			} else if (evt.wheelDelta < 0 && canvasInfo.scale > canvasInfo.minScale) {
 				// 缩小的情况
 				console.log(evt.wheelDelta, "缩小")
 				canvasInfo.offset.x += deltaX
@@ -182,8 +264,10 @@
 				canvasInfo.scale -= canvasInfo.scaleStep
 			}
 
+			// context.setTransform(canvasInfo.scale,0,0, canvasInfo.scale, 0, 0)
 			context.setTransform(canvasInfo.scale,0,0, canvasInfo.scale, canvasInfo.offset.x, canvasInfo.offset.y)
-			context.clearRect(0,0,800,600)
+			// context.clearRect(-deltaX,-deltaY,800 / canvasInfo.scale,600 / canvasInfo.scale)
+			context.clearRect(0,0 , canvas.width, canvas.height)
 			circles.forEach(c => {
 				drawCircle(context, c.x, c.y, c.r)
 			})
