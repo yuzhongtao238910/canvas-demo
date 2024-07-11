@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		canvas {
+			display: block;
+			width: 100vw;
+			height: 100vh;
+			background-color: #000;
+		}
+	</style>
+</head>
+<body>
+	<canvas></canvas>
+	<script type="text/javascript">
+		const canvas = document.querySelector("canvas")
+
+		const context = canvas.getContext("2d")
+
+		function init() {
+			canvas.width = window.innerWidth * devicePixelRatio
+			canvas.height = window.innerHeight * devicePixelRatio
+		}
+		init()
+		const fontSize = 20 * devicePixelRatio
+
+		const columnCount = Math.floor(canvas.width / fontSize)
+		const charIndex = new Array(columnCount).fill(0)
+
+
+
+		function getRandomChar() {
+			const str = "0123456789abcdefghijklmnopqrstuvwxyz"
+			return str[Math.floor(Math.random() * str.length)]
+		}
+		function draw() {
+			context.fillStyle = "rgba(0,0,0,0.1)"
+			context.fillRect(0,0,canvas.width, canvas.height)
+			context.fillStyle = "#6BE445"
+			context.textBaseline = "top"
+			for (let i = 0; i < columnCount; i++) {
+				const text = getRandomChar()
+				const x = i * fontSize
+				// 文字的纵向对齐 默认是基线对齐的
+				const y = charIndex[i] * fontSize
+
+				context.fillText(text, x, y);
+				if (y > canvas.height && Math.random() > 0.65) {
+					charIndex[i] = 0
+				} else {
+					charIndex[i]++
+				}
+				
+			}
+		}
+		draw()
+		setInterval(draw, 50)
+		// draw()
+		// draw()
+		// draw()
+		// draw()
+		// draw()
+		// draw()
+		// draw()
+		// draw()
+		// draw()
+
+		// context.fillStyle = "#fff"
+		// context.font = `bold ${fontSize}px Roboto Mono`
+		// context.fillText("Hello world", 50, 90);
+	</script>
+</body>
+</html>
