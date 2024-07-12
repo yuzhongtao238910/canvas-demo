@@ -52,8 +52,9 @@
 				const y = charIndex[i] * fontSize
 
 				context.fillText(text, x, y);
-				if (y > canvas.height && Math.random() > 0.65) {
+				if (y > canvas.height && Math.random() > 0.95) {
 					charIndex[i] = 0
+					console.log("111")
 				} else {
 					charIndex[i]++
 				}
@@ -61,7 +62,7 @@
 			}
 		}
 		draw()
-		setInterval(draw, 50)
+		setInterval(draw, 300)
 		// draw()
 		// draw()
 		// draw()

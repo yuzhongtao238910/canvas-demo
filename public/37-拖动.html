@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<style type="text/css">
+		input {
+			display: block;
+			margin: 5px auto;
+		}
+		canvas {
+			background-color: gray;
+			display: block;
+			margin: 0 auto;
+			border: 1px solid #ccc;
+		}
+	</style>
+</head>
+<body>
+	<input type="color" name="颜色选择器">
+	<canvas></canvas>
+	<script type="text/javascript">
+		const colorPicker = document.querySelector("input")
+		const canvas = document.querySelector("canvas")
+		const context = canvas.getContext("2d")
+		function init() {
+			const w = 500
+			const h = 300
+			canvas.width = w * window.devicePixelRatio
+			canvas.height = h * window.devicePixelRatio
+			canvas.style.width = w + "px"
+			canvas.style.height = h + "px"
+		}
+		init()
+		const shapes = []
+
+		class Rectangle {
+			constructor(color, startX, startY) {
+				this.color = color
+				this.startX = startX
+				this.startY = startY
+				this.endX = startX
+				this.endY = startY
+			}
+
+			get minX() {
+				return Math.min(this.startX, this.endX)
+			}
+			get maxX() {
+				return Math.max(this.startX, this.endX)
+			}
+			get minY() {
+				return Math.min(this.startY, this.endY)
+			}
+			get maxY() {
+				return Math.max(this.startY, this.endY)
+			}
+
+			draw() {
+				context.save()
+				context.beginPath()
+				context.moveTo(this.minX * window.devicePixelRatio, this.minY * window.devicePixelRatio)
+				context.lineTo(this.maxX * window.devicePixelRatio, this.minY * window.devicePixelRatio)
+				context.lineTo(this.maxX * window.devicePixelRatio, this.maxY * window.devicePixelRatio)
+				context.lineTo(this.minX * window.devicePixelRatio, this.maxY * window.devicePixelRatio)
+				context.lineTo(this.minX * window.devicePixelRatio, this.minY * window.devicePixelRatio)
+				context.fillStyle = this.color
+				context.fill()
+				context.strokeStyle = "#fff"
+				context.lineCap = "square"
+				context.lineWidth = 3 * window.devicePixelRatio
+				context.stroke()
+				
+
+				context.restore()
+			}
+
+			isInside(x, y) {
+				return x >= this.minX && x <= this.maxX && y >= this.minY && y <= this.maxY
+			}
+		}
+		canvas.onmousedown = evt => {
+			const rect = canvas.getBoundingClientRect()
+			const clickX = evt.clientX - rect.left
+			const clickY = evt.clientY - rect.top
+
+			const shape = getShape(clickX, clickY)
+			if (shape) {
+				const { startX, startY, endX, endY} = shape
+				window.onmousemove = evt => {
+					console.log("鼠标移动了")
+					const distX = evt.clientX - rect.left - clickX
+					const distY = evt.clientY - rect.top - clickY
+					shape.startX = startX + distX
+					shape.endX = endX + distX
+					shape.startY = startY + distY
+					shape.endY = endY + distY
+				}
+			} else {
+				const newShape = new Rectangle(colorPicker.value, clickX, clickY)
+				shapes.push(newShape)
+				window.onmousemove = evt => {
+					newShape.endX = evt.clientX - rect.left
+					newShape.endY = evt.clientY - rect.top
+				}
+			}
+
+
+			
+			window.onmouseup = evt => {
+				window.onmousemove = null
+				window.onmouseup = null
+			}
+		}
+
+		function getShape(x, y) {
+			for (let i = shapes.length - 1; i >=0; i--) {
+				const s = shapes[i]
+				if (s.isInside(x, y) ) {
+					return s
+				}
+			}
+			return null
+		}
+
+		// ctrl + z  回退 就把数组的最后一项干掉就好了 是吧
+		function draw() {
+			requestAnimationFrame(draw)
+			context.clearRect(0, 0, canvas.width, canvas.height)
+			shapes.forEach(shape => {
+				shape.draw()
+			})
+		}
+		draw()
+	</script>
+</body>
+</html>
